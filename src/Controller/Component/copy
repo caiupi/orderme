@@ -243,66 +243,36 @@ class OrdersControllerTest extends TestCase
         $this->assertRedirectContains('/orders');
         $this->assertRedirect(['controller' => 'Orders', 'action' => 'index']);
     }
-    public function testPressWithNoLoginUser(): void
+    public function pressWithNoLoginUser(): void
     {
         $this->get('/orders/press');
         $this->assertRedirectContains('/users/login');
         $this->assertSession('First you need to login.', 'Flash.flash.0.message');
 
     }
-    public function testPressWithLoginUserWithoutTable(): void
+    public function pressUserWithoutTable(): void
     {
         $this->login(1);
         $this->get('/orders/press');
-        $this->assertResponseSuccess();
-        $this->assertRedirect(['controller' => 'Desks', 'action' => 'index']);
-        $this->assertSession('First you need to reserve a table.', 'Flash.flash.0.message');
-        $this->get('/desks/reserve/1');
-        $this->assertResponseSuccess();
-        $this->assertSession('The desk number: 1 has been reserved.', 'Flash.flash.0.message');
-        $this->assertRedirect(['controller' => 'Carts', 'action' => 'index']);
-        $this->delete('/carts/delete/1');
-        $this->assertResponseSuccess();
-        $this->assertSession('The dish has been deleted.', 'Flash.flash.0.message');
-        $this->get('/orders/press');
-        $this->assertSession('The cart can not be empty. Please, try again.', 'Flash.flash.0.message');
-    }
-    public function testPressWithLoginUserWithATable()
-    {
-        $this->login(3);
-        $this->get('/orders/press');
-        $this->assertHeaderContains('Content-Type', 'html');
-        $this->assertRedirectContains('/orders');
-        $this->assertRedirect(['controller' => 'Orders', 'action' => 'index']);
-        $query = $this->Orders->find();
-        $result = $query->enableHydration(false)->toArray();
-        $result_count = count($result);
-        $expected_count = 4;
-        $this->assertEquals($expected_count, $result_count);
-    }
-    public function testPaymentWithLoginUserWithATable()
-    {
-        $this->login(3);
-        $this->get('/orders/payment');
-        $this->assertHeaderContains('Content-Type', 'html');
-        $this->assertRedirectContains('/dishs');
-        $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
-        $query = $this->Orders->find();
-        $result = $query->enableHydration(false)->toArray();
-        $result_count = count($result);
-        $expected_count = 2;
-        $this->assertEquals($expected_count, $result_count);
-    }
-    public function testPaymentWithLoginUserWithoutATable()
-    {
-        $this->login(1);
-        $this->get('/desks/reserve/1');
-        $this->assertResponseSuccess();
-        $this->assertSession('The desk number: 1 has been reserved.', 'Flash.flash.0.message');
-        $this->assertRedirect(['controller' => 'Carts', 'action' => 'index']);
-        $this->delete('/carts/delete/1');
-        $this->assertResponseSuccess();
-        $this->get('/orders/payment');
-        $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
+        $this->assertRedirectContains('/users/login');
+        $this->assertSession('First you need to login.', 'Flash.flash.0.message');
+
     }
 }
+
+
+    public function testPressWithNoLoginUser(): void
+    {
+        $this->get('/orders/payment');
+        $this->assertResponseOk();
+        $this->assertRedirectContains('/users/login');
+        $this->assertSession('First you need to login.', 'Flash.flash.0.message');
+    }
+    public function testPressUserWithoutTable(): void
+    {
+        $this->login(1);
+        $this->get('/orders/press');
+        $this->assertRedirectContains('/users/login');
+        $this->assertSession('First you need to login.', 'Flash.flash.0.message');
+
+    }

@@ -55,6 +55,13 @@ class UsersFixture extends TestFixture
                 'role' => 'admin',
                 'name' => 'Administrator',
             ],
+            [
+                'id' => 3,
+                'email' => 'user2@user.com',
+                'password' => 'admin',
+                'role' => 'user',
+                'name' => 'Eduart',
+            ],
         ];
         parent::init();
     }

@@ -81,9 +81,6 @@ class CartsController extends AppController
             }
             $this->Flash->error(__('The cart could not be saved. Please, try again.'));
         }
-        $users = $this->Carts->Users->find('list', ['limit' => 200]);
-        $dishs = $this->Carts->Dishs->find('list', ['limit' => 200]);
-        $this->set(compact('cart', 'users', 'dishs'));
     }
 
     /**
@@ -98,9 +95,9 @@ class CartsController extends AppController
         $this->request->allowMethod(['post', 'delete']);
         $cart = $this->Carts->get($id);
         if ($this->Carts->delete($cart)) {
-            $this->Flash->success(__('The cart has been deleted.'));
+            $this->Flash->success(__('The dish has been deleted.'));
         } else {
-            $this->Flash->error(__('The cart could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The dish could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);
@@ -117,6 +114,7 @@ class CartsController extends AppController
             return $this->redirect(['action' => 'index']);
         }
         $this->Flash->error(__('The dish could not be added. Please, try again.'));
+        return $this->redirect(['action' => 'index']);
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)

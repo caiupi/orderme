@@ -44,9 +44,21 @@ class DesksFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'user_id' => 1,
-                'available' => 1,
-                'ordered' => 1,
+                'user_id' => null,
+                'available' => true,
+                'ordered' => 0,
+            ],
+            [
+                'id' => 2,
+                'user_id' => 2,
+                'available' => false,
+                'ordered' => 0,
+            ],
+            [
+                'id' => 3,
+                'user_id' => 3,
+                'available' => false,
+                'ordered' => 0,
             ],
         ];
         parent::init();

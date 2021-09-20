@@ -46,8 +46,20 @@ class OrdersFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'user_id' => 1,
+                'user_id' => 2,
                 'dish_id' => 1,
+                'quantity' => 1,
+            ],
+            [
+                'id' => 2,
+                'user_id' => 2,
+                'dish_id' => 1,
+                'quantity' => 1,
+            ],
+            [
+                'id' => 3,
+                'user_id' => 3,
+                'dish_id' => 2,
                 'quantity' => 1,
             ],
         ];

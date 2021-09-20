@@ -47,6 +47,11 @@ class OrdersController extends AppController
      */
     public function view($id = null)
     {
+        $user= $this->request->getAttribute('identity')->getOriginalData();
+        if (!$user->isAdmin()){
+            $this->Flash->error(__('You need to be an administrator for access the page.'));
+            return $this->redirect(['action' => 'index']);
+        }
         $order = $this->Orders->get($id, [
             'contain' => ['Users', 'Dishs'],
         ]);
@@ -59,7 +64,7 @@ class OrdersController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($dishId)
     {
         $user= $this->request->getAttribute('identity')->getOriginalData();
         if (!$user->isAdmin()){
@@ -69,6 +74,7 @@ class OrdersController extends AppController
         $order = $this->Orders->newEmptyEntity();
         if ($this->request->is('post')) {
             $order = $this->Orders->patchEntity($order, $this->request->getData());
+            $order->dish_id=$dishId;
             if ($this->Orders->save($order)) {
                 $this->Flash->success(__('The order has been saved.'));
 
@@ -136,7 +142,7 @@ class OrdersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
-    public function press()
+    public function press(): ?\Cake\Http\Response
     {
         $userId=$this->request->getAttribute('identity')->id;
         $cartsUser=$this->Orders->Users->Carts->find()->where(['user_id'=>$userId]);

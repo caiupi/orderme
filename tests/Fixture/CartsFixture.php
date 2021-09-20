@@ -50,6 +50,18 @@ class CartsFixture extends TestFixture
                 'dish_id' => 1,
                 'quantity' => 1,
             ],
+            [
+                'id' => 2,
+                'user_id' => 2,
+                'dish_id' => 1,
+                'quantity' => 1,
+            ],
+            [
+                'id' => 3,
+                'user_id' => 3,
+                'dish_id' => 1,
+                'quantity' => 1,
+            ],
         ];
         parent::init();
     }

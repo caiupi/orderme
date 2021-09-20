@@ -25,31 +25,39 @@ class DishsControllerTest extends TestCase
 
         return parent::getFixtures();
     }
+
     /**
      * Fixtures
      *
      * @var array
      */
-    protected $fixtures = [
+    public $fixtures = [
         'app.Dishs',
         'app.Carts',
         'app.Orders',
         'app.Users',
+        'app.Desks',
     ];
+
     protected function login($userId = 2)
     {
-        $users = TableRegistry::getTableLocator()->get('Users');
         $user = $this->Users->get($userId);
         $this->session(['Auth' => $user]);
-        //print_r($user);
     }
+
     public function setUp(): void
     {
         parent::setUp();
         $this->loadRoutes();
-        $this->Dishs=$this->getTableLocator()->get('Dishs');
-        $this->Users=$this->getTableLocator()->get('Users');
+        $this->Dishs = $this->getTableLocator()->get('Dishs');
+        $this->Users = $this->getTableLocator()->get('Users');
+        $this->Desks = $this->getTableLocator()->get('Desks');
+        $this->configRequest(['environment' => ['HTTPS' => 'on']]);
+        $this->enableRetainFlashMessages();
+        $this->enableCsrfToken();
+        $this->enableSecurityToken();
     }
+
     /**
      * Test index method
      *
@@ -58,7 +66,12 @@ class DishsControllerTest extends TestCase
      */
     public function testIndex(): void
     {
-        $query=$this->Dishs->find()->where(['id'=>1]);
+        $this->get('/dishs');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Dishs');
+        $this->assertNoRedirect();
+        $this->assertSession('Login if you need to order.', 'Flash.flash.0.message');
+        $query = $this->Dishs->find()->where(['id' => 1]);
         $result = $query->enableHydration(false)->toArray();
         $expected = [[
             'id' => 1,
@@ -68,7 +81,7 @@ class DishsControllerTest extends TestCase
             'price' => 10,
         ],];
         $this->assertEquals($expected, $result);
-        $query=$this->Dishs->find()->where(['id'=>2]);
+        $query = $this->Dishs->find()->where(['id' => 2]);
         $result = $query->enableHydration(false)->toArray();
         $expected = [[
             'id' => 2,
@@ -80,45 +93,31 @@ class DishsControllerTest extends TestCase
         $this->assertEquals($expected, $result);
         echo '-------------------';
         //$this->assertTrue(is_a($this->Dishs, 'DishsController'));
-        //print_r($data);
-        //$this->login(1);
-        $this->get('/dishs');
-        $this->assertResponseOk();
-        $this->assertResponseContains('Dishs');
-
-
         //$this->assertResponseSuccess();
-
         //$this->assertTrue(!empty($dishs));
-
-        //$this->get('/dishs');
         //$this->assertRedirect(['controller' => 'Users', 'action' => 'login']);
         //$this->assertResponseOk();
-        //$this->login(2);
-        //$this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
-        //$this->assertResponseContains('Dishs');
-        //$this->assertResponseSuccess();
-        ///$this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
         //$this->assertNoRedirect();
         //$this->assertRedirectContains('/dishs/index/');
         //$this->assertTemplate('index');
         //$this->assertHeaderContains('Content-Type', 'html');
     }
+
     public function testIndexWithLoginNormalUser()
     {
         $this->login(1);
         $this->get('/dishs/index');
         $this->assertResponseOk();
+        $this->assertNoRedirect();
         $this->assertResponseContains('Dishs');
     }
+
     public function testIndexWithLoginAdmin()
     {
         $this->login(2);
         $this->get('/dishs/index');
         $this->assertRedirect(['controller' => 'Dishs', 'action' => 'admin']);
     }
-
-
     /**
      * Test view method
      *
@@ -132,12 +131,17 @@ class DishsControllerTest extends TestCase
         $this->assertResponseFailure();
         $this->get('/dishs/view/1');
         $this->assertResponseOk();
+        $this->assertNoRedirect();
     }
-    public function testViewWithNoLogin(){
+
+    public function testViewWithNoLogin()
+    {
         $this->get('/dishs/view');
         $this->assertRedirectContains('/users/login');
     }
-    public function testViewWithLoginNormalUser(){
+
+    public function testViewWithLoginNormalUser()
+    {
         $this->login(1);
         $this->get('/dishs/view');
         $this->assertRedirectContains('/dishs');
@@ -154,32 +158,39 @@ class DishsControllerTest extends TestCase
     {
         $this->login(2);
         $this->get('/dishs/add');
-        //$this->assertResponseOk();
-        //$this->assertResponseContains('Dishs');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Dishs');
         $data = [[
-            //'id' => 3,
+            'id' => 3,
             'name' => 'Pesto',
             'description' => 'Spaghetti al pesto',
             'type' => 'Primi',
             'price' => 12,
         ],];
-        $expected = [[
-            'id' => 3,
-            'name' => 'Toscano',
-            'description' => 'Antipasto Toscano',
-            'type' => 'Antipasto',
-            'price' => 10,
-        ],];
-        $this->post('/dishs/add', $expected);
-        //$this->assertResponseSuccess();
-        $this->assertResponseOk();
-        $query=$this->Dishs->find()->where(['id'=>3]);
+        $this->post('/dishs/add', $data[0]);
+        $this->assertResponseSuccess();
+        $query = $this->Dishs->find()->where(['id' => 3]);
         $result = $query->enableHydration(false)->toArray();
-        //$this->post('/dishs/add/', $expected);
-        //print_r($result);
+        $this->assertEquals($result, $data);
+        $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
+    }
 
-        //$this->assertEquals($expected, $result);
 
+    public function testAddWithLoginNormalUser()
+    {
+        $this->login(1);
+        $this->get('/dishs/add');
+        $this->assertRedirectContains('/dishs');
+        $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
+    }
+    public function testWithOutNoLogin()
+    {
+        $this->get('/dishs/add');
+        $this->assertRedirectContains('/users/login');
+        $this->get('/dishs/edit');
+        $this->assertRedirectContains('/users/login');
+        $this->get('/dishs/delete');
+        $this->assertRedirectContains('/users/login');
     }
 
     /**
@@ -190,9 +201,33 @@ class DishsControllerTest extends TestCase
      */
     public function testEdit(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->login(2);
+        $data = [[
+            'id' => 1,
+            'name' => 'Pesto',
+            'description' => 'Spaghetti al pesto',
+            'type' => 'Primi',
+            'price' => 12,
+        ],];
+        $this->get('/dishs/edit');
+        $this->assertResponseFailure();
+        $this->get('/dishs/edit/1');
+        $this->assertResponseOk();
+        $this->patch('/dishs/edit/1',$data[0]);
+        $this->assertResponseSuccess();
+        $query = $this->Dishs->find()->where(['id' => 1]);
+        $result = $query->enableHydration(false)->toArray();
+        $this->assertEquals($result, $data);
+        $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
     }
-
+    public function testEditWithLoginNormalUser()
+    {
+        $this->login(1);
+        $this->get('/dishs/edit');
+        $this->assertHeaderContains('Content-Type', 'html');
+        $this->assertRedirectContains('/dishs');
+        $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
+    }
     /**
      * Test delete method
      *
@@ -201,8 +236,31 @@ class DishsControllerTest extends TestCase
      */
     public function testDelete(): void
     {
-
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/dishs/delete');
+        $this->assertRedirectContains('/users/login');
+        $this->login(1);
+        $this->get('/dishs/delete');
+        $this->assertSession('You need to be an administrator for access the page.', 'Flash.flash.0.message');
+        $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
+    }
+    public function testDeletedWithAdmin(){
+        $this->login(2);
+        $data = [[
+            'id' => 3,
+            'name' => 'Pesto',
+            'description' => 'Spaghetti al pesto',
+            'type' => 'Primi',
+            'price' => 12,
+        ],];
+        $this->post('/dishs/add', $data[0]);
+        $this->assertResponseSuccess();
+        $this->delete('/dishs/delete/3');
+        $this->assertSession('The dish has been deleted.', 'Flash.flash.0.message');
+        $query = $this->Dishs->find();
+        $result = $query->enableHydration(false)->toArray();
+        $result_count = count($result);
+        $expected_count = 2;
+        $this->assertEquals($expected_count, $result_count);
     }
 
     /**
@@ -213,7 +271,8 @@ class DishsControllerTest extends TestCase
      */
     public function testBeforeFilter(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/dishs/admin');
+        $this->assertRedirectContains('/users/login');
     }
 
     /**
@@ -227,25 +286,25 @@ class DishsControllerTest extends TestCase
         $this->login(2);
         $this->get('/dishs/admin');
         $this->assertResponseOk();
+        $this->assertNoRedirect();
+        $this->assertResponseContains('Dishs');
     }
-    public function testAdminWithLoginNormalUser(){
+
+    public function testAdminWithLoginNormalUser()
+    {
         $this->login(1);
         $this->get('/dishs/admin');
         $this->assertHeaderContains('Content-Type', 'html');
         $this->assertRedirectContains('/dishs');
         $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
     }
+
     public function testAdminWithLoginAdmin()
     {
         $this->login(2);
         $this->get('/dishs/admin');
         $this->assertResponseOk();
         $this->assertResponseContains('Dishs');
+        $this->assertNoRedirect();
     }
-    public function testAdminWithNoLogin(){
-        $this->get('/dishs/admin');
-        //$this->assertRedirect(['controller' => 'Users', 'action' => 'login']);
-        $this->assertRedirectContains('/users/login');
-    }
-
 }

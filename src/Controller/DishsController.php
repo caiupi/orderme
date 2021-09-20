@@ -53,7 +53,6 @@ class DishsController extends AppController
             $dish = $this->Dishs->get($id, [
                 'contain' => ['Carts', 'Orders'],
             ]);
-
             $this->set(compact('dish'));
         }
     }
@@ -65,27 +64,22 @@ class DishsController extends AppController
      */
     public function add()
     {
-        if (!$this->Authentication->getResult()->isValid()) {
-            $this->Flash->error(__('First you need to login.'));
-            return $this->redirect(['controller' => 'users', 'action' => 'login']);
-        } else {
-            $user = $this->request->getAttribute('identity')->getOriginalData();
-            if (!$user->isAdmin()) {
-                $this->Flash->error(__('You need to be an administrator for access the page.'));
+        $user = $this->request->getAttribute('identity')->getOriginalData();
+        if (!$user->isAdmin()) {
+            $this->Flash->error(__('You need to be an administrator for access the page.'));
+            return $this->redirect(['action' => 'index']);
+        }
+        $dish = $this->Dishs->newEmptyEntity();
+        if ($this->request->is('post')) {
+            $dish = $this->Dishs->patchEntity($dish, $this->request->getData());
+            if ($this->Dishs->save($dish)) {
+                $this->Flash->success(__('The dish has been saved.'));
+
                 return $this->redirect(['action' => 'index']);
             }
-            $dish = $this->Dishs->newEmptyEntity();
-            if ($this->request->is('post')) {
-                $dish = $this->Dishs->patchEntity($dish, $this->request->getData());
-                if ($this->Dishs->save($dish)) {
-                    $this->Flash->success(__('The dish has been saved.'));
-
-                    return $this->redirect(['action' => 'index']);
-                }
-                $this->Flash->error(__('The dish could not be saved. Please, try again.'));
-            }
-            $this->set(compact('dish'));
         }
+        $this->set(compact('dish'));
+
     }
 
     /**
@@ -97,29 +91,23 @@ class DishsController extends AppController
      */
     public function edit($id = null)
     {
-        if (!$this->Authentication->getResult()->isValid()) {
-            $this->Flash->error(__('First you need to login.'));
-            return $this->redirect(['controller' => 'users', 'action' => 'login']);
-        } else {
-            $user = $this->request->getAttribute('identity')->getOriginalData();
-            if (!$user->isAdmin()) {
-                $this->Flash->error(__('You need to be an administrator for access the page.'));
+
+        $user = $this->request->getAttribute('identity')->getOriginalData();
+        if (!$user->isAdmin()) {
+            $this->Flash->error(__('You need to be an administrator for access the page.'));
+            return $this->redirect(['action' => 'index']);
+        }
+        $dish = $this->Dishs->get($id, [
+            'contain' => [],
+        ]);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $dish = $this->Dishs->patchEntity($dish, $this->request->getData());
+            if ($this->Dishs->save($dish)) {
+                $this->Flash->success(__('The dish has been saved.'));
                 return $this->redirect(['action' => 'index']);
             }
-            $dish = $this->Dishs->get($id, [
-                'contain' => [],
-            ]);
-            if ($this->request->is(['patch', 'post', 'put'])) {
-                $dish = $this->Dishs->patchEntity($dish, $this->request->getData());
-                if ($this->Dishs->save($dish)) {
-                    $this->Flash->success(__('The dish has been saved.'));
-
-                    return $this->redirect(['action' => 'index']);
-                }
-                $this->Flash->error(__('The dish could not be saved. Please, try again.'));
-            }
-            $this->set(compact('dish'));
         }
+        $this->set(compact('dish'));
     }
 
     /**
@@ -131,22 +119,17 @@ class DishsController extends AppController
      */
     public function delete($id = null)
     {
-        if (!$this->Authentication->getResult()->isValid()) {
-            $this->Flash->error(__('First you need to login.'));
-            return $this->redirect(['controller' => 'users', 'action' => 'login']);
+        $user = $this->request->getAttribute('identity')->getOriginalData();
+        if (!$user->isAdmin()) {
+            $this->Flash->error(__('You need to be an administrator for access the page.'));
+            return $this->redirect(['action' => 'index']);
+        }
+        $this->request->allowMethod(['post', 'delete']);
+        $dish = $this->Dishs->get($id);
+        if ($this->Dishs->delete($dish)) {
+            $this->Flash->success(__('The dish has been deleted.'));
         } else {
-            $user = $this->request->getAttribute('identity')->getOriginalData();
-            if (!$user->isAdmin()) {
-                $this->Flash->error(__('You need to be an administrator for access the page.'));
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->request->allowMethod(['post', 'delete']);
-            $dish = $this->Dishs->get($id);
-            if ($this->Dishs->delete($dish)) {
-                $this->Flash->success(__('The dish has been deleted.'));
-            } else {
-                $this->Flash->error(__('The dish could not be deleted. Please, try again.'));
-            }
+            $this->Flash->error(__('The dish could not be deleted. Please, try again.'));
         }
         return $this->redirect(['action' => 'index']);
     }
@@ -156,27 +139,20 @@ class DishsController extends AppController
         parent::beforeFilter($event);
         // Configure the login action to not require authentication, preventing
         // the infinite redirect loop issue
-        $this->Authentication->
-            addUnauthenticatedActions(['index', 'view']);
+        $this->Authentication->addUnauthenticatedActions(['index', 'view']);
     }
 
     /**
-     * @return \Cake\Http\Response|null
+     * * @return \Cake\Http\Response|null|void Renders view
      */
     public function admin()
     {
-        if (!$this->Authentication->getResult()->isValid()) {
-            $this->Flash->error(__('First you need to login.'));
-            return $this->redirect(['controller' => 'users', 'action' => 'login']);
-        } else {
-            $user = $this->request->getAttribute('identity')->getOriginalData();
-            if (!$user->isAdmin()) {
-                $this->Flash->error(__('You need to be an administrator for access the page.'));
-                return $this->redirect(['action' => 'index']);
-            }
-            $dishs = $this->paginate($this->Dishs);
-
-            $this->set(compact('dishs'));
+        $user = $this->request->getAttribute('identity')->getOriginalData();
+        if (!$user->isAdmin()) {
+            $this->Flash->error(__('You need to be an administrator for access the page.'));
+            return $this->redirect(['action' => 'index']);
         }
+        $dishs = $this->paginate($this->Dishs);
+        $this->set(compact('dishs'));
     }
 }
