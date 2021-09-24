@@ -217,12 +217,11 @@ class DesksControllerTest extends TestCase
         $this->assertSession('The desk number: 1 has been reserved.', 'Flash.flash.0.message');
         $this->assertRedirect(['controller' => 'Carts', 'action' => 'index']);
     }
-    public function testReserveWithLoginUserThatHaveReserveATable()
+    public function testReserveWithUserThatHaveReservedATable()
     {
         $this->login(3);
         $this->get('/desks/reserve/3');
         $this->assertSession('The desk could not be reserved. You have already reserved a table.', 'Flash.flash.0.message');
         $this->assertRedirect(['controller' => 'Desks', 'action' => 'index']);
-
     }
 }

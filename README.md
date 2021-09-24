@@ -1,8 +1,26 @@
+
+#[OrderMe](http://orderme.caiupi.com)
+<h4>[OrderMe](http://orderme.caiupi.com) is a prototype web application used for thesis university work. </h4>
+
+Order me represents a web application based on CakePhp that organizes the orders placed by customers in the restaurant.<br>
+By using a device with a browser, connected to the web, the customer can read the menu without signing up on the application.<br>
+By logging in or creating an account, customers are able to check which tables are available and make a reservation.
+Next, it is possible to add the preferred dishes to the cart and press the order button. Once completed, the customer can make the payment and leave the table.<br>
+The user with admin role is able to see all the users’ reservations and orders and is also able to cancel an order.
+Doc folder there is the database and the result of this work.<br>
+
+-Doc folder there is the database and the result of this work.
+Then visit `http://orderme.caiupi.com` to see the welcome page.
+
+
+
 # CakePHP Application Skeleton
 
 ![Build Status](https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+
+
 
 A skeleton for creating applications with [CakePHP](https://cakephp.org) 4.x.
 
@@ -42,7 +60,7 @@ automated upgrades, so you have to do any updates manually.
 
 ## Configuration
 
-Read and edit the environment specific `config/app_local.php` and setup the 
+Read and edit the environment specific `config/app_local.php` and setup the
 `'Datasources'` and any other configuration relevant for your application.
 Other environment agnostic settings can be changed in `config/app.php`.
 

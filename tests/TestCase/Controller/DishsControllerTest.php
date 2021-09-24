@@ -16,24 +16,13 @@ use Cake\TestSuite\TestCase;
 class DishsControllerTest extends TestCase
 {
     use IntegrationTestTrait;
-
-
-    public function getFixtures(): array
-    {
-        $this->addFixture('app.Dishs')
-            ->addFixture('app.Carts');
-
-        return parent::getFixtures();
-    }
-
     /**
      * Fixtures
      *
      * @var array
      */
-    public $fixtures = [
+    protected $fixtures = [
         'app.Dishs',
-        'app.Carts',
         'app.Orders',
         'app.Users',
         'app.Desks',
@@ -66,7 +55,7 @@ class DishsControllerTest extends TestCase
      */
     public function testIndex(): void
     {
-        $this->get('/dishs');
+        $this->get('/dishs/index');
         $this->assertResponseOk();
         $this->assertResponseContains('Dishs');
         $this->assertNoRedirect();
@@ -91,16 +80,6 @@ class DishsControllerTest extends TestCase
             'price' => 10,
         ],];
         $this->assertEquals($expected, $result);
-        echo '-------------------';
-        //$this->assertTrue(is_a($this->Dishs, 'DishsController'));
-        //$this->assertResponseSuccess();
-        //$this->assertTrue(!empty($dishs));
-        //$this->assertRedirect(['controller' => 'Users', 'action' => 'login']);
-        //$this->assertResponseOk();
-        //$this->assertNoRedirect();
-        //$this->assertRedirectContains('/dishs/index/');
-        //$this->assertTemplate('index');
-        //$this->assertHeaderContains('Content-Type', 'html');
     }
 
     public function testIndexWithLoginNormalUser()
@@ -294,8 +273,7 @@ class DishsControllerTest extends TestCase
     {
         $this->login(1);
         $this->get('/dishs/admin');
-        $this->assertHeaderContains('Content-Type', 'html');
-        $this->assertRedirectContains('/dishs');
+        $this->assertSession('You need to be an administrator for access the page.', 'Flash.flash.0.message');
         $this->assertRedirect(['controller' => 'Dishs', 'action' => 'index']);
     }
 
@@ -303,6 +281,7 @@ class DishsControllerTest extends TestCase
     {
         $this->login(2);
         $this->get('/dishs/admin');
+        $this->assertHeaderContains('Content-Type', 'html');
         $this->assertResponseOk();
         $this->assertResponseContains('Dishs');
         $this->assertNoRedirect();

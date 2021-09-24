@@ -124,7 +124,7 @@ class CartsControllerTest extends TestCase
         $result = $query->enableHydration(false)->toArray();
         $this->assertEquals($result, $data);
     }
-    public function testAddWithLoginNormalUserWithNoTable(): void
+    public function testAddWithLoginNormalUserWithoutTable(): void
     {
         $this->login(1);
         $this->get('/carts/add/');

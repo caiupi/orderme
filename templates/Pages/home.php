@@ -12,13 +12,11 @@
         <h4>OrderMe is a prototype web application used for university work. </h4>
         <div>
             <h6 align="left">
-                OrderMe represent a web application based on CakePhp that organize the orders of the client on the restaurant. <br>
-                The client using a device with browser, connected to the web, can read the menu which don't need to register to the application.
-                Once the client login or register an account can see the available table and make a reservation.
-                Next is possible to add the dishes that like to the cart and press the order.
-                Once the order is press the client can make the payment and leave the table.<br>
-                The user with admin role can see all the users reservations and orders and have the power to remove an order.
-
+                Order me represents a web application based on CakePhp that organizes the orders placed by customers in the restaurant.<br>
+                By using a device with a browser, connected to the web, the customer can read the menu without signing up on the application.<br>
+                By logging in or creating an account, customers are able to check which tables are available and make a reservation.
+                Next, it is possible to add the preferred dishes to the cart and press the order button. Once completed, the customer can make the payment and leave the table.<br>
+                The user with admin role is able to see all the users’ reservations and orders and is also able to cancel an order.
 
             </h6>
         </div>
@@ -41,7 +39,7 @@
                     </tr>
                 </tbody>
             </table>
-            This is just for university work so please dont destroy the application. If you have any advice contact me at caiupi@yahoo.it
+            This is just for university work so please don't destroy the databse. If you have any advice contact me at caiupi@yahoo.it
         </div>
     </div>
 </div>
