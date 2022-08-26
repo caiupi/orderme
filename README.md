@@ -69,3 +69,5 @@ Other environment agnostic settings can be changed in `config/app.php`.
 The app skeleton uses [Milligram](https://milligram.io/) (v1.3) minimalist CSS
 framework by default. You can, however, replace it with any other library or
 custom styles.
+
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=caiupi_calcolo-numerico)
