@@ -2,8 +2,8 @@
 # OrderMe
 [OrderMe](http://orderme.caiupi.com) is a prototype web application used for thesis university work.
 
-Order me represents a web application based on CakePhp that organizes the orders placed by customers in the restaurant.<br>
-By using a device with a browser, connected to the web, the customer can read the menu without signing up on the application.<br>
+Order me represent a web application based on CakePhp that organizes the orders placed by customers in the restaurant.<br>
+Using a device with a browser, connected to the web, the customer can read the menu (of a restorant) without signing up on the application.<br>
 By logging in or creating an account, customers are able to check which tables are available and make a reservation.
 Next, it is possible to add the preferred dishes to the cart and press the order button. Once completed, the customer can make the payment and leave the table.<br>
 The user with admin role is able to see all the users’ reservations and orders and is also able to cancel an order.
